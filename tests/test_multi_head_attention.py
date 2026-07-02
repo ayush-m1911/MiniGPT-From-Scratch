@@ -1,0 +1,34 @@
+import torch
+
+from models.multi_head_attention import MultiHeadCausalAttention
+from utils.mask import causal_mask
+
+batch = 2
+seq_len = 8
+d_model = 384
+heads = 6
+
+x = torch.randn(
+    batch,
+    seq_len,
+    d_model
+)
+
+mask = causal_mask(
+    seq_len,
+    x.device
+)
+
+model = MultiHeadCausalAttention(
+    d_model=d_model,
+    num_heads=heads
+)
+
+output, weights = model(
+    x,
+    mask
+)
+
+print("Input :", x.shape)
+print("Output:", output.shape)
+print("Weights:", weights.shape)
