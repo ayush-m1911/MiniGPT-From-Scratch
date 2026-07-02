@@ -19,7 +19,7 @@ class GPTEmbedding(nn.Module):
 
         batch_size, seq_len = tokens.shape
 
-        positions = torch.arrange(
+        positions = torch.arange(
             seq_len,
             device = tokens.device
         )
