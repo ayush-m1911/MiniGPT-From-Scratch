@@ -33,19 +33,33 @@ class GPT(nn.Module):
 
         self.lm_head = nn.Linear(config.n_embd, config.vocab_size, bias=False)
 
+        self.apply(self._init_weights)
+    
+    def _init_weights(self,module):
+        if isinstance(module, nn.Linear):
+            nn.init.normal_(
+                module.weight,
+                mean=0.0,
+                std=0.02
+            )
+            if module.bias is not None:
+                nn.init.zeros_(module.bias)
+        elif isinstance(module, nn.Embedding):
+            nn.init.normal_(
+                module.weight,
+                mean=0.0,
+                std=0.02
+            )
+
     def forward(self,tokens):
         batch_size, seq_len = tokens.shape
-
-        mask = causal_mask(seq_len, tokens.device)
 
         x = self.embedding(tokens)
 
         attention_maps = []
 
         for block in self.blocks:
-            x, attention = block(
-                x, mask
-            )
+            x, attention = block(x)
             attention_maps.append(attention)
         
         x = self.ln_f(x)

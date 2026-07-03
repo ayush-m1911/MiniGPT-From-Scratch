@@ -18,11 +18,10 @@ class GPTDecoderBlock(nn.Module):
 
         self.ffn = n_embd(n_embd=n_embd, dropout=dropout)
     
-    def forward(self,x,mask):
+    def forward(self,x):
 
         attn_output, attention_weights = self.attention(
-            self.ln1(x),
-            mask
+            self.ln1(x)
         )
         x = x + attn_output
 
