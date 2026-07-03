@@ -3,26 +3,26 @@ import torch.nn as nn
 
 from models.attention import CausalSelfAttention
 
-class MultiHeadCausalAttention(nn.Module):
+class n_embd(nn.Module):
     def __init__(
         self,
-        d_model: int,
-        num_heads: int,
+        n_embd: int,
+        n_head: int,
         dropout: float = 0.1
     ):
         super().__init__()
-        assert d_model % num_heads == 0
+        assert n_embd % n_head == 0
 
-        self.d_model = d_model
-        self.num_heads = num_heads
-        self.head_dim = d_model // num_heads
+        self.n_embd = n_embd
+        self.n_head = n_head
+        self.head_dim = n_embd // n_head
 
         self.qkv = nn.Linear(
-            d_model,
-            3*d_model
+            n_embd,
+            3*n_embd
         )
 
-        self.proj = nn.Linear(d_model, d_model)
+        self.proj = nn.Linear(n_embd, n_embd)
 
         self.attention = CausalSelfAttention(dropout)
 

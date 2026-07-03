@@ -10,26 +10,28 @@ class GPT(nn.Module):
 
     def __init__(self,config):
         super().__init__()
-
+        assert config.n_embd % config.n_head == 0, (
+    "Embedding dimension must be divisible by number of heads."
+)
         self.config = config
 
         self.embedding = GPTEmbedding(
             vocab_size=config.vocab_size,
-            d_model=config.d_model,
+            n_embd=config.n_embd,
             block_size=config.block_size,
             dropout=config.dropout
         )
         self.blocks = nn.ModuleList([
             GPTDecoderBlock(
-                d_model=config.d_model,
-                num_heads=config.num_heads,
+                n_embd=config.n_embd,
+                n_head=config.n_head,
                 dropout=config.dropout
             )
-            for _ in range(config.num_layers)
+            for _ in range(config.n_layer)
         ])
-        self.ln_f = nn.LayerNorm(config.d_model)
+        self.ln_f = nn.LayerNorm(config.n_embd)
 
-        self.lm_head = nn.Linear(config.d_model, config.vocab_size, bias=False)
+        self.lm_head = nn.Linear(config.n_embd, config.vocab_size, bias=False)
 
     def forward(self,tokens):
         batch_size, seq_len = tokens.shape

@@ -3,16 +3,16 @@ import torch.nn as nn
 
 class GPTEmbedding(nn.Module):
 
-    def __init__(self, vocab_size: int, d_model: int, block_size: int, dropout: float = 0.1):
+    def __init__(self, vocab_size: int, n_embd: int, block_size: int, dropout: float = 0.1):
         super().__init__()
 
         self.token_embedding = nn.Embedding(
             vocab_size,
-            d_model
+            n_embd
         )
         self.position_embedding = nn.Embedding(
             block_size,
-            d_model
+            n_embd
         )
         self.dropout = nn.Dropout(dropout)
     def forward(self,tokens):

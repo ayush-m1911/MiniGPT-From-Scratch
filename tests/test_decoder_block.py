@@ -20,8 +20,8 @@ mask = causal_mask(
 )
 
 block = GPTDecoderBlock(
-    d_model=d_model,
-    num_heads=num_heads
+    n_embd=d_model,
+    n_head=num_heads
 )
 
 output, weights = block(
