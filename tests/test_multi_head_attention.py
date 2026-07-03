@@ -1,6 +1,6 @@
 import torch
 
-from models.multi_head_attention import n_embd
+from models.multi_head_attention import MultiHeadAttention
 from utils.mask import causal_mask
 
 batch = 2
@@ -19,14 +19,14 @@ mask = causal_mask(
     x.device
 )
 
-model = n_embd(
+model = MultiHeadAttention(
     n_embd=d_model,
-    n_head=heads
+    n_head=heads,
+    block_size=seq_len
 )
 
 output, weights = model(
-    x,
-    mask
+    x
 )
 
 print("Input :", x.shape)

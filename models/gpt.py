@@ -1,4 +1,3 @@
-from tests.test_causal_attention import seq_len
 import torch
 import torch.nn as nn
 
@@ -25,6 +24,7 @@ class GPT(nn.Module):
             GPTDecoderBlock(
                 n_embd=config.n_embd,
                 n_head=config.n_head,
+                block_size=config.block_size,
                 dropout=config.dropout
             )
             for _ in range(config.n_layer)

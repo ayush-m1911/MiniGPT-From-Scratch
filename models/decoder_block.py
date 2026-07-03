@@ -1,22 +1,23 @@
 import torch.nn as nn
 
-from models.multi_head_attention import n_embd
+from models.multi_head_attention import MultiHeadAttention
 from models.feed_forward import FeedForward
 
 class GPTDecoderBlock(nn.Module):
-    def __init__(self, n_embd, n_head, dropout=0.1):
+    def __init__(self, n_embd, n_head, block_size, dropout=0.1):
         super().__init__()
 
         self.ln1 = nn.LayerNorm(n_embd)
 
-        self.attention = n_embd(
+        self.attention = MultiHeadAttention(
             n_embd=n_embd,
             n_head=n_head,
+            block_size=block_size,
             dropout=dropout
         )
         self.ln2 = nn.LayerNorm(n_embd)
 
-        self.ffn = n_embd(n_embd=n_embd, dropout=dropout)
+        self.ffn = FeedForward(n_embd=n_embd, dropout=dropout)
     
     def forward(self,x):
 
