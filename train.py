@@ -7,37 +7,52 @@ from data.datamodule import get_dataloader
 from utils.device import DEVICE
 from utils.logger import setup_logger
 from training.trainer import Trainer
+from utils.model_utils import count_parameters
 
-set_seed(42)
+def main():
 
-config = GPTConfig()
+    set_seed(42)
 
-logger = setup_logger()
+    config = GPTConfig()
 
-train_loader = get_dataloader(
-    batch_size=config.batch_size,
-    block_size=config.block_size
-)
+    logger = setup_logger()
 
+    logger.info("=" * 60)
+    logger.info("GPT From Scratch")
+    logger.info("=" * 60)
 
-model = GPT(config)
+    logger.info(f"Using Device : {DEVICE}")
 
-optimizer = torch.optim.AdamW(
-    model.parameters(),
-    lr=config.learning_rate,
-    betas=config.betas,
-    eps=config.eps,
-    weight_decay=config.weight_decay
-)
+    train_loader = get_dataloader(
+        batch_size=config.batch_size,
+        block_size=config.block_size
+    )
 
-trainer = Trainer(
-    model=model,
-    train_loader=train_loader,
-    config=config,
-    optimizer=optimizer,
-    device=DEVICE,
-    logger=logger
-)
+    model = GPT(config)
+
+    logger.info(
+        f"Parameters : {count_parameters(model):,}"
+    )
+
+    optimizer = torch.optim.AdamW(
+        model.parameters(),
+        lr=config.learning_rate,
+        betas=config.betas,
+        eps=config.eps,
+        weight_decay=config.weight_decay
+    )
+
+    trainer = Trainer(
+        model=model,
+        train_loader=train_loader,
+        config=config,
+        optimizer=optimizer,
+        device=DEVICE,
+        logger=logger
+    )
+
+    trainer.train()
+
 
 if __name__ == "__main__":
-    trainer.train()
+    main()
