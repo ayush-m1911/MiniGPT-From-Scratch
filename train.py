@@ -41,6 +41,7 @@ def main():
         eps=config.eps,
         weight_decay=config.weight_decay
     )
+    
 
     trainer = Trainer(
         model=model,

@@ -2,6 +2,7 @@ from networkx.generators import spectral_graph_forge
 import torch
 import torch.nn as nn
 from tqdm import tqdm
+from utils.checkpoint import CheckpointManager
 
 
 class Trainer:
@@ -28,7 +29,7 @@ class Trainer:
         self.logger = logger
 
         self.criterion = nn.CrossEntropyLoss()
-
+        self.checkpoint_manager = CheckpointManager()
         self.model.to(self.device)
 
     def forward_pass(self, x, y):
@@ -126,6 +127,26 @@ class Trainer:
         self.logger.info(
         f"Validation Loss : {val_loss:.4f}"
     )
+        
+        is_best = self.checkpoint_manager.save(
+    model=self.model,
+    optimizer=self.optimizer,
+    epoch=epoch,
+    train_loss=train_loss,
+    val_loss=val_loss,
+    config=self.config,
+)
+        if is_best:
+
+         self.logger.info(
+            "New best model saved!"
+        )
+
+        else:
+
+            self.logger.info(
+                "Latest checkpoint updated."
+            )
         self.logger.info("-" * 60)
     
     def validation_step(self, x, y):
