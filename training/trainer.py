@@ -1,3 +1,4 @@
+from networkx.generators import spectral_graph_forge
 import torch
 import torch.nn as nn
 from tqdm import tqdm
@@ -12,6 +13,7 @@ class Trainer:
         self,
         model,
         train_loader,
+        val_loader,
         config,
         optimizer,
         device,
@@ -19,6 +21,7 @@ class Trainer:
     ):
         self.model = model
         self.train_loader = train_loader
+        self.val_loader = val_loader
         self.config = config
         self.optimizer = optimizer
         self.device = device
@@ -100,7 +103,7 @@ class Trainer:
 
         return average_loss
 
-    def after_epoch(self, epoch, train_loss):
+    def after_epoch(self, epoch, train_loss,val_loss):
         """
         Operations to perform after every epoch.
 
@@ -120,9 +123,47 @@ class Trainer:
         self.logger.info(
             f"Training Loss : {train_loss:.4f}"
         )
-
+        self.logger.info(
+        f"Validation Loss : {val_loss:.4f}"
+    )
         self.logger.info("-" * 60)
+    
+    def validation_step(self, x, y):
 
+        loss = self.forward_pass(x, y)
+
+        return loss.item()
+
+    def validate(self, epoch):
+       """
+    Evaluates the model on the validation set.
+    """
+
+       self.model.eval()
+
+       total_loss = 0.0
+
+       with torch.no_grad():
+
+         progress = tqdm(
+            self.val_loader,
+            desc=f"Validation {epoch + 1}/{self.config.epochs}"
+         )
+
+         for x, y in progress:
+
+            loss = self.validation_step(x, y)
+
+            total_loss += loss
+
+            progress.set_postfix(
+                val_loss=f"{loss:.4f}"
+            )
+
+       average_loss = total_loss / len(self.val_loader)
+
+       return average_loss
+   
     def train(self):
         """
         Complete training loop.
@@ -135,6 +176,8 @@ class Trainer:
         for epoch in range(self.config.epochs):
 
             train_loss = self.train_epoch(epoch)
+
+            val_loss = self.validate(epoch)
 
             self.after_epoch(
                 epoch,

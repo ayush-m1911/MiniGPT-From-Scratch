@@ -23,7 +23,7 @@ def main():
 
     logger.info(f"Using Device : {DEVICE}")
 
-    train_loader = get_dataloader(
+    train_loader, val_loader = get_dataloader(
         batch_size=config.batch_size,
         block_size=config.block_size
     )
@@ -45,6 +45,7 @@ def main():
     trainer = Trainer(
         model=model,
         train_loader=train_loader,
+        val_loader=val_loader,
         config=config,
         optimizer=optimizer,
         device=DEVICE,
