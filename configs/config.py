@@ -23,3 +23,12 @@ class GPTConfig:
     warmup_steps: int = 500
 
     seed: int = 42
+
+    def __post_init__(self):
+        assert self.n_embd % self.n_head == 0, \
+            "Embedding dimension must be divisible by number of heads."
+
+        assert self.block_size > 0
+        assert self.vocab_size > 0
+        assert self.dropout >= 0.0
+        assert self.dropout <= 1.0

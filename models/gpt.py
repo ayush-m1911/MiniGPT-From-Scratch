@@ -32,6 +32,7 @@ class GPT(nn.Module):
         self.ln_f = nn.LayerNorm(config.n_embd)
 
         self.lm_head = nn.Linear(config.n_embd, config.vocab_size, bias=False)
+        self.lm_head_weight = self.embedding.token_embedding.weight
 
         self.apply(self._init_weights)
     
